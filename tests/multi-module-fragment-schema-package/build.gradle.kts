@@ -5,8 +5,8 @@ plugins {
 
 dependencies {
   implementation("com.apollographql.apollo3:apollo-runtime")
-  implementation(project(":multi-module-root"))
-  apolloMetadata(project(":multi-module-root"))
+  implementation(projects.multiModuleRoot)
+  apolloMetadata(projects.multiModuleRoot)
   testImplementation(kotlin("test-junit"))
 }
 

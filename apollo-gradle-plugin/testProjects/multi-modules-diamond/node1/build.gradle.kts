@@ -8,8 +8,8 @@ dependencies {
   implementation(groovy.util.Eval.x(project, "x.dep.apollo.api"))
   testImplementation(kotlin("test-junit"))
 
-  api(project(":root"))
-  apolloMetadata(project(":root"))
+  api(projects.root)
+  apolloMetadata(projects.root)
 }
 
 apollo {

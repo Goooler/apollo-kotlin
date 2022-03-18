@@ -6,8 +6,8 @@ plugins {
 dependencies {
   implementation(groovy.util.Eval.x(project, "x.dep.apollo.api"))
 
-  api(project(":root"))
-  apolloMetadata(project(":root"))
+  api(projects.root)
+  apolloMetadata(projects.root)
 }
 
 apollo {
