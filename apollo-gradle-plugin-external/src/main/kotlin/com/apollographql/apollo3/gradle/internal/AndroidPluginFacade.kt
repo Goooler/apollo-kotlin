@@ -53,9 +53,7 @@ fun connectToAndroidSourceSet(project: Project, sourceSetName: String, outputDir
       .getByName(sourceSetName)
 
   val kotlinSourceSet = androidSourceSet.kotlinSourceSet()
-  if (kotlinSourceSet != null) {
-    kotlinSourceSet.srcDir(outputDir)
-  }
+  kotlinSourceSet?.srcDir(outputDir)
 
   container.all {
     if (it.sourceSets.any { it.name == sourceSetName }) {
