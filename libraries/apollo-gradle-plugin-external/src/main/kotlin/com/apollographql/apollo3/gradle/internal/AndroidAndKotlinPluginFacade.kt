@@ -5,7 +5,7 @@ import com.android.build.gradle.api.AndroidSourceSet
 
 // Copied from kotlin plugin
 internal fun AndroidSourceSet.kotlinSourceSet(): AndroidSourceDirectorySet? {
-  val getKotlin = this::class.java.methods.find { it.name == "getKotlin" } ?: return null
-  return getKotlin(this) as? AndroidSourceDirectorySet
+  val getKotlin = this::class.java.methods.find { it.name == "getKotlin" }
+  return (getKotlin?.invoke(this) as? AndroidSourceDirectorySet) ?: java
 }
 
