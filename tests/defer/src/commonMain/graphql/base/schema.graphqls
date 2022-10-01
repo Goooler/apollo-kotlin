@@ -1,5 +1,6 @@
 type Query {
   computers: [Computer!]!
+  computer(id: ID!): Computer
 }
 
 type Mutation {
@@ -20,6 +21,8 @@ type Computer {
   cpu: String!
   year: Int!
   screen: Screen!
+  errorField: String
+  nonNullErrorField: String!
 }
 
 type Screen {

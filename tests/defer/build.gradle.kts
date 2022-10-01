@@ -19,15 +19,15 @@ kotlin {
   sourceSets {
     val commonMain by getting {
       dependencies {
-        implementation(libs.apollo.runtime)
-        implementation(libs.apollo.normalizedcache)
+        implementation(golatac.lib("apollo.runtime"))
+        implementation(golatac.lib("apollo.normalizedcache"))
       }
     }
 
     val commonTest by getting {
       dependencies {
-        implementation(libs.apollo.mockserver)
-        implementation(libs.apollo.testingsupport)
+        implementation(golatac.lib("apollo.mockserver"))
+        implementation(golatac.lib("apollo.testingsupport"))
       }
     }
 
@@ -45,7 +45,7 @@ kotlin {
 
     val jvmTest by getting {
       dependencies {
-        implementation(libs.apollo.httpCache)
+        implementation(golatac.lib("apollo.httpCache"))
       }
     }
   }
@@ -87,5 +87,15 @@ fun com.apollographql.apollo3.gradle.api.Service.configureConnection(generateKot
       // For autocomplete to work
       connectToKotlinSourceSet("commonTest")
     }
+  }
+}
+
+tasks.withType(AbstractTestTask::class.java) {
+  // Run the defer with Router tests only from a a specific CI job
+  val runDeferWithRouterTests = System.getenv("COM_APOLLOGRAPHQL_DEFER_WITH_ROUTER_TESTS").toBoolean()
+  if (runDeferWithRouterTests) {
+    filter.setIncludePatterns("test.DeferWithRouterTest")
+  } else {
+    filter.setExcludePatterns("test.DeferWithRouterTest")
   }
 }

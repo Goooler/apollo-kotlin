@@ -1,15 +1,11 @@
 import JapiCmp.configureJapiCmp
 
-buildscript {
-  repositories {
-    mavenCentral()
-    google()
-    gradlePluginPortal()
-  }
-  dependencies {
-    classpath("com.apollographql.apollo3:build-logic")
-  }
+plugins {
+  id("apollo.library").apply(false)
+  id("net.mbonnin.golatac").version("0.0.3")
 }
+
+golatac.init(file("gradle/libraries.toml"))
 
 apply(plugin = "com.github.ben-manes.versions")
 apply(plugin = "org.jetbrains.dokka")
@@ -55,7 +51,7 @@ tasks.register("ciPublishRelease") {
   if (isTag()) {
     dependsOn(subprojectTasks("publishAllPublicationsToOssStagingRepository"))
     // Only publish plugins to the Gradle portal if everything else succeeded
-    finalizedBy(":apollo-gradle-plugin:publishPlugins")
+    finalizedBy(":libraries:apollo-gradle-plugin:publishPlugins")
   } else {
     doFirst {
       error("We are not on a tag, fail release publishing")
@@ -66,7 +62,7 @@ tasks.register("ciPublishRelease") {
 
 tasks.register("ciTestsGradle") {
   description = "Execute the Gradle tests (slow)"
-  dependsOn(":apollo-gradle-plugin:test")
+  dependsOn(":libraries:apollo-gradle-plugin:test")
 }
 
 tasks.register("ciTestsNoGradle") {
@@ -89,10 +85,10 @@ tasks.register("ciTestsNoGradle") {
   /**
    * Update the database schemas in CI
    */
-  dependsOn(":apollo-normalized-cache-sqlite:generateCommonMainJsonDatabaseSchema")
-  dependsOn(":apollo-normalized-cache-sqlite-incubating:generateCommonMainJsonDatabaseSchema")
-  dependsOn(":apollo-normalized-cache-sqlite-incubating:generateCommonMainBlobDatabaseSchema")
-  dependsOn(":apollo-normalized-cache-sqlite-incubating:generateCommonMainBlob2DatabaseSchema")
+  dependsOn(":libraries:apollo-normalized-cache-sqlite:generateCommonMainJsonDatabaseSchema")
+  dependsOn(":libraries:apollo-normalized-cache-sqlite-incubating:generateCommonMainJsonDatabaseSchema")
+  dependsOn(":libraries:apollo-normalized-cache-sqlite-incubating:generateCommonMainBlobDatabaseSchema")
+  dependsOn(":libraries:apollo-normalized-cache-sqlite-incubating:generateCommonMainBlob2DatabaseSchema")
 
   doLast {
     checkGitStatus()

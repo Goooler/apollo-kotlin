@@ -5,12 +5,23 @@ plugins {
 }
 
 dependencies {
-  implementation(libs.apollo.runtime)
-  testImplementation(libs.kotlin.test)
-  testImplementation(libs.junit)
+  implementation(golatac.lib("apollo.runtime"))
+  testImplementation(golatac.lib("kotlin.test"))
+  testImplementation(golatac.lib("junit"))
 }
 
 apollo {
-  packageName.set("enums")
-  sealedClassesForEnumsMatching.set(listOf(".*avity", "FooSealed"))
+  service("kotlin") {
+    packageName.set("enums.kotlin")
+    sealedClassesForEnumsMatching.set(listOf(".*avity", "FooSealed"))
+  }
+
+  service("java") {
+    packageName.set("enums.java")
+    generateKotlinModels.set(false)
+    outputDirConnection {
+      connectToJavaSourceSet("main")
+    }
+    classesForEnumsMatching.set(listOf(".*avity", "FooClass"))
+  }
 }

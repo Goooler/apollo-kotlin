@@ -13,6 +13,7 @@ import org.gradle.plugins.signing.SigningExtension
 import org.jetbrains.dokka.gradle.AbstractDokkaTask
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.dokka.gradle.DokkaTaskPartial
+import com.android.build.api.dsl.LibraryExtension
 
 fun Project.configurePublishing() {
   apply {
@@ -27,6 +28,11 @@ fun Project.configurePublishing() {
   }
   pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
     configureDokka()
+  }
+  pluginManager.withPlugin("com.android.library") {
+    extensions.findByType(LibraryExtension::class.java)!!.publishing {
+      singleVariant("release")
+    }
   }
   configurePublishingInternal()
 }
@@ -91,6 +97,8 @@ private fun Project.configurePublishingInternal() {
     }
   }
   val emptyJavadocJarTaskProvider = tasks.register("emptyJavadocJar", org.gradle.jvm.tasks.Jar::class.java) {
+    // Add an appendix to avoid the output of this task to overlap with defaultJavadocJar
+    archiveAppendix.set("empty")
     archiveClassifier.set("javadoc")
   }
 
@@ -125,10 +133,10 @@ private fun Project.configurePublishingInternal() {
           withType(MavenPublication::class.java).configureEach {
             if (name == "kotlinMultiplatform") {
               // Add the javadoc to the multiplatform publications
-              artifact(javadocJarTaskProvider.get())
+              artifact(javadocJarTaskProvider)
             } else {
               // And an empty one for others so as to save some space
-              artifact(emptyJavadocJarTaskProvider.get())
+              artifact(emptyJavadocJarTaskProvider)
             }
           }
         }
@@ -138,7 +146,7 @@ private fun Project.configurePublishingInternal() {
            * java-gradle-plugin creates 2 publications (one marker and one regular) but without source/javadoc.
            */
           withType(MavenPublication::class.java) {
-            artifact(javadocJarTaskProvider.get())
+            artifact(javadocJarTaskProvider)
             // Only add sources for the main publication
             // XXX: is there a nicer way to do this?
             if (!name.lowercase().contains("marker")) {
@@ -157,8 +165,8 @@ private fun Project.configurePublishingInternal() {
               from(components.findByName("release"))
             }
 
-            artifact(javadocJarTaskProvider.get())
-            artifact(createAndroidSourcesTask().get())
+            artifact(javadocJarTaskProvider)
+            artifact(createAndroidSourcesTask())
 
             artifactId = findProperty("POM_ARTIFACT_ID") as String?
           }
@@ -171,8 +179,8 @@ private fun Project.configurePublishingInternal() {
           create("default", MavenPublication::class.java) {
 
             from(components.findByName("java"))
-            artifact(javadocJarTaskProvider.get())
-            artifact(createJavaSourcesTask().get())
+            artifact(javadocJarTaskProvider)
+            artifact(createJavaSourcesTask())
 
             artifactId = findProperty("POM_ARTIFACT_ID") as String?
           }
